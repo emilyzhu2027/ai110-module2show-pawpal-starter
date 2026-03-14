@@ -1,4 +1,5 @@
 import streamlit as st
+from pawpal_system import Owner, Pet, Task, Scheduler
 
 st.set_page_config(page_title="PawPal+", page_icon="🐾", layout="centered")
 
@@ -48,6 +49,8 @@ st.caption("Add a few tasks. In your final version, these should feed into your 
 
 if "tasks" not in st.session_state:
     st.session_state.tasks = []
+if "owner" not in st.session_state:
+    st.session_state.owner = Owner(name=owner_name, hrs_available=8.0)
 
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -86,3 +89,14 @@ Suggested approach:
 4. Connect your scheduler here and display results.
 """
     )
+
+st.divider()
+
+st.subheader("Adding a Pet")
+if st.button("Add Pet"):
+    st.session_state.owner.addPet(Pet(name=pet_name, type=species, age=2))
+if st.session_state.owner and len(st.session_state.owner.getPets()) > 0:
+    st.write("Pets:")
+    st.table(st.session_state.owner.getPets())
+else:
+    st.info("No pets yet. Add one above.")

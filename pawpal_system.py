@@ -81,3 +81,29 @@ class Scheduler:
                 current_time = end_time
         
         return schedule
+
+    def sort_by_time(self):
+        """Sorts the tasks in this scheduler by durationHrs (ascending, shortest first)."""
+        self.tasks.sort(key=lambda t: t.durationHrs)
+
+    def filterByCompletion(self, ifCompleted: bool) -> List[Task]:
+        """Returns a list of tasks filtered by their completion status."""
+        return [t for t in self.tasks if t.ifCompleted == ifCompleted]
+
+    def detect_conflicts(self, schedule: List[Tuple[Task, float, float]]) -> bool:
+        """Detects if there are any time conflicts (overlapping tasks) in the given schedule.
+        Returns True if conflicts exist, False otherwise."""
+        if not schedule:
+            return False
+        
+        # Sort the schedule by start time
+        sorted_schedule = sorted(schedule, key=lambda x: x[1])
+        
+        # Check for overlaps
+        for i in range(1, len(sorted_schedule)):
+            current_start = sorted_schedule[i][1]
+            previous_end = sorted_schedule[i-1][2]
+            if current_start < previous_end:
+                return True
+        
+        return False
