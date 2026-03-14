@@ -2,16 +2,57 @@
 
 ## 1. System Design
 
+**3 core actions**
+- Add owner/pet information
+- Add and edit tasks
+- View daily schedule/plan
+
 **a. Initial design**
 
 - Briefly describe your initial UML design.
 - What classes did you include, and what responsibilities did you assign to each?
+ * Owner
+    * Attributes:
+        * name: string
+        * pets: List of Pet objects
+        * hrs_available: int
+        * tasks: List of Tasks
+    * Methods:
+        * addPet: adds a pet to owners list
+        * removePet: removes a pet from owners list
+        * getPets: gets a list of pets owned by owner
+        * getTasks: gets a list of tasks for owner
+        * addTask: add task to list of tasks for owner
+        * removeTask: remove task from list of tasks for owner
+ * Pet
+    * Attributes:
+        * name: string
+        * type: string
+        * age: int
+    * Methods:
+ * Task
+    * Attributes:
+        * title: string
+        * durationHrs: int
+        * priority: string
+        * type: string
+        * pet: Pet
+        * ifCompeleted: boolean
+    * Methods:
+        * complete: marks ifCompeleted as true
+ * Scheduler
+    * Attributes:
+        * owner: Owner
+        * pet: Pet
+        * tasks: List of Tasks
+    * Methods:
+        * generatePlan: generate plan
 
 **b. Design changes**
 
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
-
+    * Yes, the AI suggested removing a pet attribute, which I initially added to the scheduler. But this would be a logic error as that would assume a 1:1 relationship between Pet and a Schedule.
 ---
 
 ## 2. Scheduling Logic and Tradeoffs
