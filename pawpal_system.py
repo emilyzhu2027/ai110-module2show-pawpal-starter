@@ -1,5 +1,5 @@
-from dataclasses import dataclass
-from typing import List
+from dataclasses import dataclass, field
+from typing import List, Tuple
 
 @dataclass
 class Pet:
@@ -10,44 +10,74 @@ class Pet:
 @dataclass
 class Task:
     title: str
-    durationHrs: int
+    durationHrs: float
     priority: str
     type: str
     pet: Pet
-    ifCompleted: bool
+    ifCompleted: bool = False
 
     def complete(self):
-        pass
+        self.ifCompleted = True
+
+@dataclass
+class Plan:
+    scheduled_tasks: List[Task]
+    total_time: float
+    explanation: str
 
 @dataclass
 class Owner:
     name: str
-    pets: List[Pet]
-    hrs_available: int
-    tasks: List[Task]
+    pets: List[Pet] = field(default_factory=list)
+    hrs_available: float = 0.0
+    tasks: List[Task] = field(default_factory=list)
 
     def addPet(self, pet: Pet):
-        pass
+        if pet not in self.pets:
+            self.pets.append(pet)
 
     def removePet(self, pet: Pet):
-        pass
+        if pet in self.pets:
+            self.pets.remove(pet)
 
     def getPets(self) -> List[Pet]:
-        pass
+        return self.pets
 
     def getTasks(self) -> List[Task]:
-        pass
+        return self.tasks
 
     def addTask(self, task: Task):
-        pass
+        if task not in self.tasks:
+            self.tasks.append(task)
 
     def removeTask(self, task: Task):
-        pass
+        if task in self.tasks:
+            self.tasks.remove(task)
 
 @dataclass
 class Scheduler:
     owner: Owner
+    pet: Pet
     tasks: List[Task]
 
-    def generatePlan(self):
-        pass
+    def generatePlan(self) -> List[Tuple[Task, float, float]]:
+        # Filter tasks for this pet, excluding completed ones
+        pet_tasks = [t for t in self.tasks if t.pet == self.pet and not t.ifCompleted]
+        
+        # Sort by priority: high > medium > low (case-insensitive)
+        priority_map = {'high': 3, 'medium': 2, 'low': 1}
+        pet_tasks.sort(key=lambda t: priority_map.get(t.priority.lower(), 0), reverse=True)
+        
+        # Schedule tasks sequentially within available hours
+        schedule = []
+        current_time = 0.0
+        available = self.owner.hrs_available
+        
+        for task in pet_tasks:
+            if current_time + task.durationHrs <= available:
+                start_time = current_time
+                end_time = current_time + task.durationHrs
+                schedule.append((task, start_time, end_time))
+                current_time = end_time
+        
+        return schedule
